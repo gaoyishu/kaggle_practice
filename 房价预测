@@ -1,1 +1,14 @@
 ###File Description###
+
+import numpy as np
+import pandas as pd
+
+#read file
+
+train_df = pd.read_csv('filename', index_col=0)
+test_df = pd.read_csv('filename', index_col=0)
+
+#through the data
+tran_df.head()  #first 5 rows infomation
+
+#merge data  看完数据，可以考虑如何处理数据。先合并test data 和 train data，方便做数据清洗和处理。
