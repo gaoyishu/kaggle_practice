@@ -99,8 +99,59 @@ y_final = (y_ridge + y_rf) / 2
 #提交结果
 submission_df = pd.DataFrame(data= {'Id' : test_df.index, 'SalePrice': y_final})
 
+---------------------------------------------------------------------------------------------------------
+###其他kaggle竞赛的做法
 
+from sklearn.linear_model import Ridge
+ridge = Ridge(15)
 
+#diference between regressor and classifier 
+from sklearn.ensemble import BaggingRegressor
+from sklearn.model_selection import cross_val_score
+
+params = [1, 10, 15, 20, 25, 30, 40]  #numbers of base estimater
+test_scores = []
+for param in params:
+    clf = BaggingRegressor(n_estimators=param, base_estimator=ridge)
+    test_score = np.sqrt(-cross_val_score(clf, X_train, y_train, cv=10, scoring='neg_mean_squared_error'))
+    test_scores.append(np.mean(test_score))
+
+#plot to decide whether use bagging
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.plot(params, test_scores)
+plt.title("n_estimator vs CV Error");
+
+#boosting
+
+from sklearn.ensemble import AdaBoostRegressor
+
+params = [10, 15, 20, 25, 30, 35, 40, 45, 50]
+test_scores = []
+for param in params:
+    clf = BaggingRegressor(n_estimators=param, base_estimator=ridge)
+    test_score = np.sqrt(-cross_val_score(clf, X_train, y_train, cv=10, scoring='neg_mean_squared_error'))
+    test_scores.append(np.mean(test_score))
+
+plt.plot(params, test_scores)
+plt.title("n_estimator vs CV Error");
+
+#屌屌的XGBoost
+
+from xgboost import XGBRegressor
+
+params = [1,2,3,4,5,6]
+test_scores = []
+for param in params:
+    clf = XGBRegressor(max_depth=param)
+    test_score = np.sqrt(-cross_val_score(clf, X_train, y_train, cv=10, scoring='neg_mean_squared_error'))
+    test_scores.append(np.mean(test_score))
+    
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.plot(params, test_scores)
+plt.title("max_depth vs CV Error");
 
 
 
