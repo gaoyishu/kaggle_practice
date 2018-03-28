@@ -12,3 +12,45 @@ test_df = pd.read_csv('filename', index_col=0)
 tran_df.head()  #first 5 rows infomation
 
 #merge data  看完数据，可以考虑如何处理数据。先合并test data 和 train data，方便做数据清洗和处理。
+%matplotlib inline
+prices = pd.Dataframe({"price":train_df["SalePrice"],"log(price+1)":np.loglp(train_df["SalePrice"])})
+prices.hist()
+#log用于预处理y值，+1是为了预防y等于0的情况，进行normalize变成偏正态化，平滑数据。最后的结果需要把这些log后的数据变回去，log1p()就需要expm1(),log()就需要exp()。
+
+y_train = np.log1p(train_df.pop(‘SalePrice'))  #pandas.pop 剪切saleprice这一column，复制到y_train中去。
+all_df = pd.concat((train_df, test_df), axis=0)  
+all_df.shape
+
+y_train.head()
+all_df["MSSubclass"].dtype
+#改变dtype从int为str
+all_df["MSSubclass"] = all_df["MSSubclass"].astype(str)
+all_df['MSSubClass'].value_counts()
+
+pd.get_dummies(all_df['MSSubclass'], prefix='MSSubclass').head()
+all_dummy_df = pd.get_dummies(all_df)
+all_dummy_df.head()
+
+#检查numerical数据有没有问题
+all_dummy_df.isnull().sum().sort_values(ascending=False).head(10)
+
+mean_cols = all_dummy_df.mean()
+mean_cols.head()
+
+all_dummy_df = all_dummy_df.fillna(mean_cols) #fill the nan or lost.
+
+#normalization of numerical data
+
+numeric_cols = all_df.columns[all_df.dtypes != 'object' ]
+numeric_col_means = all_dummy_df.loc[:,numeric_cols].mean()
+numeric_col_std = all_dummy_df.loc[:,numeric_cols].std()
+all_dummy_df.loc[:, numeiric_cols] = (all_dummy_df[:,numeric_cols] - numeric_cols_means) / numeric_col_std
+
+#separate the train_data and text_data
+dummy_train_df = all_dummy_df.loc[train_df.index]
+dummy_train_df = all_dummt_df.loc[test_df.index]
+
+
+
+
+
